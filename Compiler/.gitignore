@@ -1,4 +1,9 @@
 .env
-node_modules
-dist
-build
+node_modules/
+dist/
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+.DS_Store
+out/
