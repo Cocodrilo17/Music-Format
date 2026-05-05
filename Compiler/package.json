@@ -1,0 +1,24 @@
+{
+  "name": "music-format-compiler",
+  "version": "1.0.0",
+  "description": "A markup compiler for creating music lists",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc"
+  },
+  "keywords": [
+    "compiler",
+    "markup",
+    "music",
+    "list"
+  ],
+  "author": "Aarón Márquez Gutiérrez",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  }
+}
