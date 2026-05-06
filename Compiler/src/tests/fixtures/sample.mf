@@ -1,0 +1,9 @@
+alias v = "founded"
+
+
+alias c = "no exists"
+
+alias
+g
+=
+"favorite"
