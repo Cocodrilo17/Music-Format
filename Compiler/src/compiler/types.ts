@@ -1,7 +1,8 @@
 // --- Lexer ---
 
 export const TokenKind = Object.freeze({
-  STATUS_DEF: 'STATUS_DEF'
+  STATUS_DEF: 'STATUS_DEF',
+  COLOR_LABEL: 'COLOR_DEF'
 } as const);
 
 export type TokenKind = typeof TokenKind[keyof typeof TokenKind];
@@ -21,5 +22,12 @@ export interface StatusDefToken extends BaseToken {
   colorLabel?: string | undefined;
 }
 
+export interface ColorDefToken extends BaseToken {
+  kind: 'COLOR_DEF';
+  color: string;
+  value: string;
+}
+
 export type Token =
-  StatusDefToken;
+  StatusDefToken
+  | ColorDefToken;

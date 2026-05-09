@@ -1,8 +1,10 @@
-import type { Token, StatusDefToken } from './types.js';
+import type { Token, StatusDefToken, ColorDefToken } from './types.js';
 
 const TokenRegex = Object.freeze({
   STATUS_DEF:
     /status(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+([\wáéíóúü]+)\s*=\s*(?:(['"])((?:\\.|.)*?)\3|([\w áéíóúü\d]+))(?:\s*<-\s*(?:(['"])((?:\\.|.)*?)\6|([\w áéíóúü\d]+)))?/gms,
+  COLOR_DEF:
+    /color\s+(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(['"])((?:\\.|.)*?)\2|([\w áéíóúü\d]+))/gms
 });
 
 export default function tokenize(fileText: string): Token[] {
@@ -30,7 +32,7 @@ export default function tokenize(fileText: string): Token[] {
   for (const match of statusDefMatches) {
 
     const lineStart = getLine(match.index);
-    const lineEnd = getLine(match.index) + match[0].split('\n').length - 1;
+    const lineEnd = lineStart + match[0].split('\n').length - 1;
 
     tokens.push({
       kind: 'STATUS_DEF',
@@ -42,6 +44,23 @@ export default function tokenize(fileText: string): Token[] {
       color: match[1],
       colorLabel: match[8] ?? match[7]
     } satisfies StatusDefToken);
+  }
+
+  // color #fff = "white"
+  const colorDefMatches = fileText.matchAll(TokenRegex.COLOR_DEF);
+  for (const match of colorDefMatches) {
+
+    const lineStart = getLine(match.index);
+    const lineEnd = lineStart + match[0].split('\n').length - 1;
+
+    tokens.push({
+      kind: 'COLOR_DEF',
+      lineStart,
+      lineEnd,
+      index: match.index,
+      color: match[1] ?? '',
+      value: match[3] ?? match[4] ?? ''
+    } satisfies ColorDefToken);
   }
 
   return tokens;
