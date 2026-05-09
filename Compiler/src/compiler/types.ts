@@ -1,8 +1,16 @@
 // --- Lexer ---
 
+export type MatchingFn = (
+  tokens: Token[],
+  fileText: string,
+  matchingRegex: RegExp,
+  getLine: (index: number) => number,
+  resolveEscapes: <T>(raw: string | T) => string | T
+) => void;
+
 export const TokenKind = Object.freeze({
   STATUS_DEF: 'STATUS_DEF',
-  COLOR_LABEL: 'COLOR_DEF'
+  COLOR_DEF: 'COLOR_DEF'
 } as const);
 
 export type TokenKind = typeof TokenKind[keyof typeof TokenKind];

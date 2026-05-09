@@ -1,4 +1,6 @@
-import type { Token, StatusDefToken, ColorDefToken } from './types.js';
+import type { Token } from './types.js';
+import statusDefMatches from './lexer/statusDefMatches.ts';
+import colorDefMatches from './lexer/colorDefMatches.ts';
 
 const TokenRegex = Object.freeze({
   STATUS_DEF:
@@ -6,6 +8,11 @@ const TokenRegex = Object.freeze({
   COLOR_DEF:
     /color\s+(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(['"])((?:\\.|.)*?)\2|([\w áéíóúü\d]+))/gms
 });
+
+function resolveEscapes<T>(raw: string | T): string | T {
+  if (typeof raw !== 'string') return raw;
+  return raw.replace(/\\(.)/g, '$1');
+}
 
 export default function tokenize(fileText: string): Token[] {
   const tokens: Token[] = [];
@@ -27,41 +34,9 @@ export default function tokenize(fileText: string): Token[] {
     return low + 1;
   }
 
-  // status#ffffff v = founded <- "white"
-  const statusDefMatches = fileText.matchAll(TokenRegex.STATUS_DEF);
-  for (const match of statusDefMatches) {
-
-    const lineStart = getLine(match.index);
-    const lineEnd = lineStart + match[0].split('\n').length - 1;
-
-    tokens.push({
-      kind: 'STATUS_DEF',
-      key: match[2] ?? '',
-      value: match[4] ?? match[5] ?? '',
-      index: match.index,
-      lineStart,
-      lineEnd,
-      color: match[1],
-      colorLabel: match[8] ?? match[7]
-    } satisfies StatusDefToken);
-  }
-
-  // color #fff = "white"
-  const colorDefMatches = fileText.matchAll(TokenRegex.COLOR_DEF);
-  for (const match of colorDefMatches) {
-
-    const lineStart = getLine(match.index);
-    const lineEnd = lineStart + match[0].split('\n').length - 1;
-
-    tokens.push({
-      kind: 'COLOR_DEF',
-      lineStart,
-      lineEnd,
-      index: match.index,
-      color: match[1] ?? '',
-      value: match[3] ?? match[4] ?? ''
-    } satisfies ColorDefToken);
-  }
+  // Modifying "tokens" by reference
+  statusDefMatches(tokens, fileText, TokenRegex.STATUS_DEF, getLine, resolveEscapes);
+  colorDefMatches(tokens, fileText, TokenRegex.COLOR_DEF, getLine, resolveEscapes);
 
   return tokens;
 }
