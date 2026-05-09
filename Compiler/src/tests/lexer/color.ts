@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import tokenize from '../../compiler/lexer.ts';
+import type { ColorDefToken } from '../../compiler/types.ts';
 
 export function registerColorTests() {
   describe('color definition', () => {
@@ -58,7 +59,7 @@ export function registerColorTests() {
     });
 
     it('should tokenize a escaped string value', () => {
-      const tokens = tokenize('color #faf = "\\"Pink\\""');
+      const tokens = tokenize('color #faf = "\\"Pink\\""') as ColorDefToken[];
 
       expect(tokens[0]?.value).toBe('"Pink"');
     });

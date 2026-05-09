@@ -1,16 +1,21 @@
 // --- Lexer ---
 
-export type MatchingFn = (
+// Matching functions
+type BaseMatchingFnArgs = [
   tokens: Token[],
   fileText: string,
   matchingRegex: RegExp,
   getLine: (index: number) => number,
-  resolveEscapes: <T>(raw: string | T) => string | T
-) => void;
+];
 
+export type BaseMatchingFn = (...args: BaseMatchingFnArgs) => void;
+export type DefsMatchingFn = (...args: [...BaseMatchingFnArgs, resolveEscapes: <T>(raw: string | T) => string | T]) => void;
+
+// tokens
 export const TokenKind = Object.freeze({
   STATUS_DEF: 'STATUS_DEF',
-  COLOR_DEF: 'COLOR_DEF'
+  COLOR_DEF: 'COLOR_DEF',
+  ENUM: 'ENUM'
 } as const);
 
 export type TokenKind = typeof TokenKind[keyof typeof TokenKind];
@@ -36,6 +41,30 @@ export interface ColorDefToken extends BaseToken {
   value: string;
 }
 
+export const EnumKinds = Object.freeze([
+  '0',
+  '0r',
+  'a',
+  'ar',
+  'i',
+  'ir',
+  'name',
+  'author',
+  'status',
+  'comment',
+  'tag',
+  'link',
+  'color'
+] as const);
+
+export type EnumKinds = typeof EnumKinds[number];
+
+export interface EnumToken extends BaseToken {
+  kind: 'ENUM',
+  mode: EnumKinds
+}
+
 export type Token =
-  StatusDefToken
-  | ColorDefToken;
+  | StatusDefToken
+  | ColorDefToken
+  | EnumToken;

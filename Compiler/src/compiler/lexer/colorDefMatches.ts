@@ -1,6 +1,6 @@
-import type { ColorDefToken, MatchingFn } from '../types.ts';
+import type { ColorDefToken, DefsMatchingFn } from '../types.ts';
 
-const colorDefMatches: MatchingFn = (tokens, fileText, matchingRegex, getLine, resolveEscapes) => {
+const colorDefMatches: DefsMatchingFn = (tokens, fileText, matchingRegex, getLine, resolveEscapes) => {
   // color #fff = "white"
   const colorDefMatches = fileText.matchAll(matchingRegex);
   for (const match of colorDefMatches) {

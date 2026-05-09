@@ -1,12 +1,16 @@
-import type { Token } from './types.js';
+import type { Token } from './types.ts';
+import { EnumKinds } from './types.ts';
 import statusDefMatches from './lexer/statusDefMatches.ts';
 import colorDefMatches from './lexer/colorDefMatches.ts';
+import enumMatches from './lexer/enumMatches.ts';
 
 const TokenRegex = Object.freeze({
   STATUS_DEF:
     /status(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+([\wáéíóúü]+)\s*=\s*(?:(['"])((?:\\.|.)*?)\3|([\w áéíóúü\d]+))(?:\s*<-\s*(?:(['"])((?:\\.|.)*?)\6|([\w áéíóúü\d]+)))?/gms,
   COLOR_DEF:
-    /color\s+(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(['"])((?:\\.|.)*?)\2|([\w áéíóúü\d]+))/gms
+    /color\s+(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(['"])((?:\\.|.)*?)\2|([\w áéíóúü\d]+))/gms,
+  ENUM:
+    new RegExp(`enum(\\s+((?i:${EnumKinds.join('|')})))?:`, 'gms')
 });
 
 function resolveEscapes<T>(raw: string | T): string | T {
@@ -37,6 +41,7 @@ export default function tokenize(fileText: string): Token[] {
   // Modifying "tokens" by reference
   statusDefMatches(tokens, fileText, TokenRegex.STATUS_DEF, getLine, resolveEscapes);
   colorDefMatches(tokens, fileText, TokenRegex.COLOR_DEF, getLine, resolveEscapes);
+  enumMatches(tokens, fileText, TokenRegex.ENUM, getLine);
 
   return tokens;
 }

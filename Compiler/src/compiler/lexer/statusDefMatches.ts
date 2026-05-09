@@ -1,6 +1,6 @@
-import type { MatchingFn, StatusDefToken } from '../types.ts';
+import type { DefsMatchingFn, StatusDefToken } from '../types.ts';
 
-const statusDefMatches: MatchingFn = (tokens, fileText, matchingRegex, getLine, resolveEscapes) => {
+const statusDefMatches: DefsMatchingFn = (tokens, fileText, matchingRegex, getLine, resolveEscapes) => {
   // status#ffffff v = founded <- "white"
   const statusDefMatches = fileText.matchAll(matchingRegex);
   for (const match of statusDefMatches) {
