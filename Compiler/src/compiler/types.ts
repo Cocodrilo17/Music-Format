@@ -15,7 +15,8 @@ export type DefsMatchingFn = (...args: [...BaseMatchingFnArgs, resolveEscapes: <
 export const TokenKind = Object.freeze({
   STATUS_DEF: 'STATUS_DEF',
   COLOR_DEF: 'COLOR_DEF',
-  ENUM: 'ENUM'
+  ENUM: 'ENUM',
+  TAG_DEF: 'TAG_DEF'
 } as const);
 
 export type TokenKind = typeof TokenKind[keyof typeof TokenKind];
@@ -41,7 +42,7 @@ export interface ColorDefToken extends BaseToken {
   value: string;
 }
 
-export const EnumKinds = Object.freeze([
+export const ENUM_MODES = Object.freeze([
   '0',
   '0r',
   'a',
@@ -57,14 +58,21 @@ export const EnumKinds = Object.freeze([
   'color'
 ] as const);
 
-export type EnumKinds = typeof EnumKinds[number];
+export type EnumMode = typeof ENUM_MODES[number];
 
 export interface EnumToken extends BaseToken {
   kind: 'ENUM',
-  mode: EnumKinds
+  mode: EnumMode
+}
+
+export interface TagDefToken extends BaseToken {
+  kind: 'TAG_DEF';
+  tag: string;
+  metadata: string;
 }
 
 export type Token =
   | StatusDefToken
   | ColorDefToken
-  | EnumToken;
+  | EnumToken
+  | TagDefToken;

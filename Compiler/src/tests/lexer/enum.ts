@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import tokenize from '../../compiler/lexer.ts';
-import { EnumKinds, type EnumToken } from '../../compiler/types.ts';
+import { ENUM_MODES, type EnumToken } from '../../compiler/types.ts';
 
 export function registerEnumTests() {
   describe('enum directive', () => {
@@ -24,7 +24,7 @@ export function registerEnumTests() {
 
       const tokens = tokenize(string);
 
-      const expectedArray: EnumToken[] = EnumKinds.map((mode, index) => {
+      const expectedArray: EnumToken[] = ENUM_MODES.map((mode, index) => {
         return {
           kind: 'ENUM',
           lineStart: index + 2,
@@ -67,6 +67,18 @@ export function registerEnumTests() {
     it('should not tokenize a enum with a unknown type', () => {
       const tokens = tokenize('enum statuses:');
       expect(tokens).toHaveLength(0);
+    });
+
+    it('should tokenize a enum no matter the lower or upper case', () => {
+      const tokens = tokenize('enum I:');
+      expect(tokens).toHaveLength(1);
+      expect(tokens[0]).toMatchObject({
+        kind: 'ENUM',
+        lineStart: 1,
+        lineEnd: 1,
+        mode: 'i',
+        index: 0
+      } satisfies EnumToken);
     });
   });
 }

@@ -16,7 +16,8 @@ function run(args: string, cwd?: string): {
     });
     return { stdout, stderr: '', code: 0 };
   }
-  catch (error: any) {
+  catch (error) {
+    if (!(error instanceof Error) || !('stdout' in error)) throw error;
     return {
       stdout: error.stdout ?? '',
       stderr: error.stderr ?? '',

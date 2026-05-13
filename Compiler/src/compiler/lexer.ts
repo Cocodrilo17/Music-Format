@@ -1,16 +1,19 @@
 import type { Token } from './types.ts';
-import { EnumKinds } from './types.ts';
+import { ENUM_MODES } from './types.ts';
 import statusDefMatches from './lexer/statusDefMatches.ts';
 import colorDefMatches from './lexer/colorDefMatches.ts';
 import enumMatches from './lexer/enumMatches.ts';
+import tagDefMatches from './lexer/tagDefMatches.ts';
 
 const TokenRegex = Object.freeze({
   STATUS_DEF:
-    /status(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+([\wáéíóúü]+)\s*=\s*(?:(['"])((?:\\.|.)*?)\3|([\w áéíóúü\d]+))(?:\s*<-\s*(?:(['"])((?:\\.|.)*?)\6|([\w áéíóúü\d]+)))?/gms,
+    /status(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+(?<key>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\w áéíóúü\d]+))(?:\s*<-\s*(?:(['"])(?<quotedLabelColor>(?:\\.|.)*?)\6|(?<rawLabelColor>[\w áéíóúü\d]+)))?/gms,
   COLOR_DEF:
-    /color\s+(#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(['"])((?:\\.|.)*?)\2|([\w áéíóúü\d]+))/gms,
+    /color\s+(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\w áéíóúü\d]+))/gms,
   ENUM:
-    new RegExp(`enum(\\s+((?i:${EnumKinds.join('|')})))?:`, 'gms')
+    new RegExp(`enum(\\s+(?<mode>(?i:${ENUM_MODES.join('|')})))?:`, 'gms'),
+  TAG_DEF:
+    /tag\s+(?<tag>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedMetadata>(?:\\.|.)*?)\k<q1>|(?<rawMetadata>[\w áéíóúü\d]+))/gms
 });
 
 function resolveEscapes<T>(raw: string | T): string | T {
@@ -42,6 +45,7 @@ export default function tokenize(fileText: string): Token[] {
   statusDefMatches(tokens, fileText, TokenRegex.STATUS_DEF, getLine, resolveEscapes);
   colorDefMatches(tokens, fileText, TokenRegex.COLOR_DEF, getLine, resolveEscapes);
   enumMatches(tokens, fileText, TokenRegex.ENUM, getLine);
+  tagDefMatches(tokens, fileText, TokenRegex.TAG_DEF, getLine, resolveEscapes);
 
-  return tokens;
+  return tokens.sort((a, b) => a.index - b.index);
 }

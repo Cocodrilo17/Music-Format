@@ -1,18 +1,20 @@
-import type { BaseMatchingFn, EnumToken, EnumKinds } from '../types.ts';
+import type { BaseMatchingFn, EnumToken, EnumMode } from '../types.ts';
 
 const enumMatches: BaseMatchingFn = (tokens, fileText, matchingRegex, getLine) => {
   // enum 0:
-  const enumMatches = fileText.matchAll(matchingRegex);
-  for (const match of enumMatches) {
+  const enumDefMatches = fileText.matchAll(matchingRegex);
+  for (const match of enumDefMatches) {
     const lineStart = getLine(match.index);
     const lineEnd = lineStart + match[0].split('\n').length - 1;
+
+    const rawMode = match.groups?.mode?.toLowerCase() as EnumMode | undefined;
 
     tokens.push({
       kind: 'ENUM',
       lineStart,
       lineEnd,
       index: match.index,
-      mode: match[2] ? match[2]?.toLowerCase() as EnumKinds : 'name',
+      mode: rawMode ?? 'name',
     } satisfies EnumToken);
   }
 };
