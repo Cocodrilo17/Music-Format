@@ -4,16 +4,22 @@ import statusDefMatches from './lexer/statusDefMatches.ts';
 import colorDefMatches from './lexer/colorDefMatches.ts';
 import enumMatches from './lexer/enumMatches.ts';
 import tagDefMatches from './lexer/tagDefMatches.ts';
+import tagGroupMatches from './lexer/tagGroupMatches.ts';
 
 const TokenRegex = Object.freeze({
   STATUS_DEF:
-    /status(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+(?<key>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\w áéíóúü\d]+))(?:\s*<-\s*(?:(['"])(?<quotedLabelColor>(?:\\.|.)*?)\6|(?<rawLabelColor>[\w áéíóúü\d]+)))?/gms,
+    /status(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+(?<key>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\wáéíóúü]+))(?:\s*<-\s*(?:(['"])(?<quotedLabelColor>(?:\\.|.)*?)\6|(?<rawLabelColor>[\w áéíóúü\d]+)))?/gms,
   COLOR_DEF:
-    /color\s+(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\w áéíóúü\d]+))/gms,
+    /color\s+(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\wáéíóúü]+))/gms,
   ENUM:
     new RegExp(`enum(\\s+(?<mode>(?i:${ENUM_MODES.join('|')})))?:`, 'gms'),
   TAG_DEF:
-    /tag\s+(?<tag>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedMetadata>(?:\\.|.)*?)\k<q1>|(?<rawMetadata>[\w áéíóúü\d]+))/gms
+    /tag\s+(?<tag>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedMetadata>(?:\\.|.)*?)\k<q1>|(?<rawMetadata>[\wáéíóúü\d]+))/gms,
+  TAG_GROUP: {
+    COMPLETE: /tag\s+(?<group>[\wáéíóúü]+)\s*(?<array>\[(?:\s*[\wáéíóúü]+\s*(?:=>\s*(?:(?<q1>['"])(?:\\.|.)*?\k<q1>|[\wáéíóúü]+))?;)*\s*])/gms,
+    ENTRY: /(?<key>[\wáéíóúü]+)\s*(?:=>\s*(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\wáéíóúü]+)))?;/gms
+  }
+
 });
 
 function resolveEscapes<T>(raw: string | T): string | T {
@@ -46,6 +52,7 @@ export default function tokenize(fileText: string): Token[] {
   colorDefMatches(tokens, fileText, TokenRegex.COLOR_DEF, getLine, resolveEscapes);
   enumMatches(tokens, fileText, TokenRegex.ENUM, getLine);
   tagDefMatches(tokens, fileText, TokenRegex.TAG_DEF, getLine, resolveEscapes);
+  tagGroupMatches(tokens, fileText, TokenRegex.TAG_GROUP, getLine, resolveEscapes);
 
   return tokens.sort((a, b) => a.index - b.index);
 }

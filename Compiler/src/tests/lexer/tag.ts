@@ -36,7 +36,7 @@ export function registerTagTests() {
       } satisfies TagDefToken);
     });
 
-    it('should tokenize a tag with scaped values', () => {
+    it('should tokenize a tag with escaped values', () => {
       const tokens = tokenize('tag rock = "the \\"best\\" rock song"');
       expect(tokens).toHaveLength(1);
       expect(tokens[0]).toMatchObject({

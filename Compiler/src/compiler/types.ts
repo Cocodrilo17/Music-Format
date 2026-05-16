@@ -1,25 +1,30 @@
 // --- Lexer ---
 
 // Matching functions
-type BaseMatchingFnArgs = [
+type BaseMatchingFnArgs<R> = [
   tokens: Token[],
   fileText: string,
-  matchingRegex: RegExp,
+  matchingRegex: R,
   getLine: (index: number) => number,
 ];
 
-export type BaseMatchingFn = (...args: BaseMatchingFnArgs) => void;
-export type DefsMatchingFn = (...args: [...BaseMatchingFnArgs, resolveEscapes: <T>(raw: string | T) => string | T]) => void;
+type BlockRegex = {
+  COMPLETE: RegExp,
+  ENTRY: RegExp
+}
+
+export type BaseMatchingFn = (...args: BaseMatchingFnArgs<RegExp>) => void;
+export type DefsMatchingFn = (...args: [...BaseMatchingFnArgs<RegExp>, resolveEscapes: <T>(raw: string | T) => string | T]) => void;
+export type BlockMatchingFn = (...args: [...BaseMatchingFnArgs<BlockRegex>, resolveEscapes: <T>(raw: string | T) => string | T]) => void;
 
 // tokens
-export const TokenKind = Object.freeze({
-  STATUS_DEF: 'STATUS_DEF',
-  COLOR_DEF: 'COLOR_DEF',
-  ENUM: 'ENUM',
-  TAG_DEF: 'TAG_DEF'
-} as const);
 
-export type TokenKind = typeof TokenKind[keyof typeof TokenKind];
+export type TokenKind =
+  'STATUS_DEF' |
+  'COLOR_DEF'  |
+  'ENUM'       |
+  'TAG_DEF'    |
+  'TAG_GROUP'  ;
 
 export interface BaseToken {
   kind: TokenKind;
@@ -71,8 +76,18 @@ export interface TagDefToken extends BaseToken {
   metadata: string;
 }
 
+export interface TagGroupToken extends BaseToken {
+  kind: 'TAG_GROUP';
+  group: string;
+  raw: {
+    key: string;
+    value: string | undefined;
+  }[]
+}
+
 export type Token =
   | StatusDefToken
   | ColorDefToken
   | EnumToken
-  | TagDefToken;
+  | TagDefToken
+  | TagGroupToken;

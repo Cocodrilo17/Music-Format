@@ -4,7 +4,7 @@ import { ENUM_MODES, type EnumToken } from '../../compiler/types.ts';
 
 export function registerEnumTests() {
   describe('enum directive', () => {
-    it('should tokenize every types of enums', () => {
+    it('should tokenize every type of enums', () => {
       const string = `
       enum 0:
       enum 0r:
@@ -64,12 +64,12 @@ export function registerEnumTests() {
       } satisfies EnumToken);
     });
 
-    it('should not tokenize a enum with a unknown type', () => {
+    it('should not tokenize an enum with a unknown type', () => {
       const tokens = tokenize('enum statuses:');
       expect(tokens).toHaveLength(0);
     });
 
-    it('should tokenize a enum no matter the lower or upper case', () => {
+    it('should tokenize an enum no matter the lower or upper case', () => {
       const tokens = tokenize('enum I:');
       expect(tokens).toHaveLength(1);
       expect(tokens[0]).toMatchObject({

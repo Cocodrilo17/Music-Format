@@ -65,7 +65,7 @@ export function registerStatusTests() {
       });
     });
 
-    it('should not tokenize a not 3 and 6 length hex colors', () => {
+    it('should not tokenize hex colors with invalid length', () => {
       const tokens = tokenize(`status#12
       v = "favorite" <- "white"
       
