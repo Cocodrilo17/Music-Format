@@ -8,7 +8,7 @@ type BaseMatchingFnArgs<R> = [
   getLine: (index: number) => number,
 ];
 
-type BlockRegex = {
+export type BlockRegex = {
   COMPLETE: RegExp,
   ENTRY: RegExp
 }
@@ -20,11 +20,12 @@ export type BlockMatchingFn = (...args: [...BaseMatchingFnArgs<BlockRegex>, reso
 // tokens
 
 export type TokenKind =
-  'STATUS_DEF' |
-  'COLOR_DEF'  |
-  'ENUM'       |
-  'TAG_DEF'    |
-  'TAG_GROUP'  ;
+  'STATUS_DEF'   |
+  'STATUS_COLOR' |
+  'COLOR_DEF'    |
+  'ENUM'         |
+  'TAG_DEF'      |
+  'TAG_GROUP';
 
 export interface BaseToken {
   kind: TokenKind;
@@ -39,6 +40,12 @@ export interface StatusDefToken extends BaseToken {
   value: string;
   color?: string | undefined;
   colorLabel?: string | undefined;
+}
+
+export interface StatusColorToken extends BaseToken {
+  kind: 'STATUS_COLOR';
+  identifier: string;
+  newColor: string;
 }
 
 export interface ColorDefToken extends BaseToken {
@@ -66,8 +73,8 @@ export const ENUM_MODES = Object.freeze([
 export type EnumMode = typeof ENUM_MODES[number];
 
 export interface EnumToken extends BaseToken {
-  kind: 'ENUM',
-  mode: EnumMode
+  kind: 'ENUM';
+  mode: EnumMode;
 }
 
 export interface TagDefToken extends BaseToken {
@@ -87,6 +94,7 @@ export interface TagGroupToken extends BaseToken {
 
 export type Token =
   | StatusDefToken
+  | StatusColorToken
   | ColorDefToken
   | EnumToken
   | TagDefToken

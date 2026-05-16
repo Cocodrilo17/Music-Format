@@ -5,10 +5,13 @@ import colorDefMatches from './lexer/colorDefMatches.ts';
 import enumMatches from './lexer/enumMatches.ts';
 import tagDefMatches from './lexer/tagDefMatches.ts';
 import tagGroupMatches from './lexer/tagGroupMatches.ts';
+import statusColorMatches from './lexer/statusColorMatches.ts';
 
 const TokenRegex = Object.freeze({
   STATUS_DEF:
-    /status(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+(?<key>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\wáéíóúü]+))(?:\s*<-\s*(?:(['"])(?<quotedLabelColor>(?:\\.|.)*?)\6|(?<rawLabelColor>[\w áéíóúü\d]+)))?/gms,
+    /status(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))?\s+(?<key>[\wáéíóúü]+)\s*=\s*(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\wáéíóúü]+))(?:\s*<-\s*(?:(?<q2>['"])(?<quotedLabelColor>(?:\\.|.)*?)\k<q2>|(?<rawLabelColor>[\w áéíóúü\d]+)))?/gms,
+  STATUS_COLOR:
+    /^\s*(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+(?<identifier>[\wáéíóúü]+)/gms,
   COLOR_DEF:
     /color\s+(?<color>#(?:[a-fA-F\d]{6}|[a-fA-F\d]{3}))\s+=\s+(?:(?<q1>['"])(?<quotedValue>(?:\\.|.)*?)\k<q1>|(?<rawValue>[\wáéíóúü]+))/gms,
   ENUM:
@@ -49,6 +52,7 @@ export default function tokenize(fileText: string): Token[] {
 
   // Modifying "tokens" by reference
   statusDefMatches(tokens, fileText, TokenRegex.STATUS_DEF, getLine, resolveEscapes);
+  statusColorMatches(tokens, fileText, TokenRegex.STATUS_COLOR, getLine);
   colorDefMatches(tokens, fileText, TokenRegex.COLOR_DEF, getLine, resolveEscapes);
   enumMatches(tokens, fileText, TokenRegex.ENUM, getLine);
   tagDefMatches(tokens, fileText, TokenRegex.TAG_DEF, getLine, resolveEscapes);

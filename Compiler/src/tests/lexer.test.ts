@@ -4,6 +4,7 @@ import { registerStatusTests } from './lexer/status.ts';
 import { registerEnumTests } from './lexer/enum.ts';
 import { registerTagTests } from './lexer/tag.ts';
 import { registerTagGroupTests } from './lexer/tagGroup.ts';
+import { registerStatusColorTests } from './lexer/statusColor.ts';
 
 describe('Lexer', () => {
   registerColorTests();
@@ -11,4 +12,5 @@ describe('Lexer', () => {
   registerEnumTests();
   registerTagTests();
   registerTagGroupTests();
+  registerStatusColorTests();
 });

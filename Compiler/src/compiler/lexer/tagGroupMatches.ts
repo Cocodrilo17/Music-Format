@@ -4,7 +4,7 @@ const tagGroupMatches: BlockMatchingFn = (tokens, fileText, matchingRegex, getLi
   /*
   tag Clasica [
     barroco      => "Bach, Henry Purcell";
-    romanticismo => "Bethoven, Chopin";
+    romanticismo => "Beethoven, Chopin";
     clasicismo   => Mozart;
   ]
   */
